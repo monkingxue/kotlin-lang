@@ -65,7 +65,7 @@ class Parser(val input: TokenStream) {
         val cond: ExprASTNode = parseExpression()
         if (!isPunc("{")) skipKeyword("then")
         val then: ExprASTNode = parseExpression()
-        var unless: ExprASTNode? = null
+        var unless: ExprASTNode = NullExprNode()
         if (isKeyword("else")) {
             input.next()
             unless = parseExpression()

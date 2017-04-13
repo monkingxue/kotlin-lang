@@ -64,7 +64,7 @@ class TokenStream(val input: InputSteam) {
     private fun readIdent(): StringExprNode {
         val id = readWhile(isId)
         val type = if (isKeyword(id)) "kw" else "var"
-        return StringExprNode(type, id)
+        return StringExprNode(id, type)
     }
 
     private fun readEscaped(end: String): String {

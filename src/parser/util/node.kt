@@ -11,7 +11,7 @@ open class ValueExprNode<out T> : ExprASTNode() {
 
 class LambdaExprNode(val vars: MutableList<ExprASTNode>, val body: ExprASTNode, override val type: String = "lambda") : ExprASTNode()
 class ProgExprNode(val prog: MutableList<ExprASTNode>, override val type: String = "prog") : ExprASTNode()
-class IfExprNode(val cond: ExprASTNode, val then: ExprASTNode, val unless: ExprASTNode?, override val type: String = "if") : ExprASTNode()
+class IfExprNode(val cond: ExprASTNode, val then: ExprASTNode, val unless: ExprASTNode, override val type: String = "if") : ExprASTNode()
 class CallExprNode(val func: ExprASTNode, val args: MutableList<ExprASTNode>, override val type: String = "call") : ExprASTNode()
 class BinaryExprNode(val oprator: String, val left: ExprASTNode, val right: ExprASTNode, override val type: String) : ExprASTNode()
 
