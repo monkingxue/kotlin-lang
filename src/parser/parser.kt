@@ -19,7 +19,7 @@ class Parser(val input: TokenStream) {
             val token = input.peek()
             if (token.type != "null")
                 token is ValueExprNode<*> && token.type == type
-                        && (!value.toBoolean() || token.value == value)
+                        && (value.isEmpty() || token.value == value)
             else false
         }
     }
@@ -108,7 +108,9 @@ class Parser(val input: TokenStream) {
                     return exp
                 }
                 isPunc("{") -> return parseProg()
-                isKeyword("if") -> return parseIf()
+                isKeyword("if") -> {
+                    print(isKeyword("if"));return parseIf()
+                }
                 isKeyword("true") || isKeyword("false") -> return parseBool()
                 isKeyword("lambda") -> {
                     input.next()
