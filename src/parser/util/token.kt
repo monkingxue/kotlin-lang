@@ -1,6 +1,5 @@
 package parser.util
 
-data class Token<T>(val type: String, val value: T)
 
 /**
  * regex pattern string
@@ -36,7 +35,7 @@ val isComment = hasToken(comment)
 val isString = hasToken(string)
 
 class TokenStream(val input: InputSteam) {
-    var current: Token<*>? = null
+    var current: ValueExprNode<*> = NullExprNode()
 
     private inline fun readWhile(predicate: (String) -> Boolean): String {
         var str: String = ""
@@ -45,7 +44,7 @@ class TokenStream(val input: InputSteam) {
         return str
     }
 
-    private fun readNumber(): Token<Float> {
+    private fun readNumber(): NumberExprNode {
         var hasDot = false
         val numStr = readWhile(
                 fun(ch): Boolean {
@@ -59,13 +58,13 @@ class TokenStream(val input: InputSteam) {
                     return isDigit(ch)
                 }
         )
-        return Token("num", numStr.toFloat())
+        return NumberExprNode(numStr.toDouble())
     }
 
-    private fun readIdent(): Token<String> {
+    private fun readIdent(): StringExprNode {
         val id = readWhile(isId)
         val type = if (isKeyword(id)) "kw" else "var"
-        return Token(type, id)
+        return StringExprNode(type, id)
     }
 
     private fun readEscaped(end: String): String {
@@ -86,20 +85,20 @@ class TokenStream(val input: InputSteam) {
         return str
     }
 
-    private fun readString(): Token<String> = Token("str", readEscaped("\"\""))
+    private fun readString(): StringExprNode = StringExprNode(readEscaped("\"\""), "str")
 
-    private fun readPunc(): Token<String> = Token("punc", input.next())
+    private fun readPunc(): StringExprNode = StringExprNode(input.next(), "punc")
 
-    private fun readOp(): Token<String> = Token("op", readWhile(isOp))
+    private fun readOp(): StringExprNode = StringExprNode(readWhile(isOp), "op")
 
     private fun skipComment(): Unit {
         readWhile { it != "\n" }
         input.next()
     }
 
-    private fun readNext(): Token<*>? {
+    private fun readNext(): ValueExprNode<*> {
         readWhile(isWhitespace)
-        if (input.eof()) return null
+        if (input.eof()) return NullExprNode()
         val ch = input.peek()
         when {
             isComment(ch) -> {
@@ -113,22 +112,22 @@ class TokenStream(val input: InputSteam) {
             isOp(ch) -> return readOp()
         }
         input.croak("Can't handle character: $ch")
-        return null
+        return NullExprNode()
     }
 
-    fun peek(): Token<*>? {
-        if(current == null)
+    fun peek(): ValueExprNode<*> {
+        if (current.type == "null")
             current = readNext()
         return current
     }
 
-    fun next(): Token<*>? {
+    fun next(): ValueExprNode<*> {
         val token = current
-        current = null
-        return token ?: readNext()
+        current = NullExprNode()
+        return if (token.type != "null") token else readNext()
     }
 
-    fun eof(): Boolean = peek() == null
+    fun eof(): Boolean = peek().type == "null"
 
     fun croak(msg: String): Unit = input.croak(msg)
 }

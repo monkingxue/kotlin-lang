@@ -1,5 +1,8 @@
 package parser.test
 
+class ExprASTNode(val type: String)
+
+
 val str = "(:)"
 
 val hasToken: (String) -> (String) -> Boolean
@@ -9,5 +12,7 @@ val isString = hasToken(str)
 
 fun main(args: Array<String>) {
 
-    print(isString("\""))
+    val list = mutableListOf<ExprASTNode>()
+    list.add(ExprASTNode("1"))
+    print(list[0])
 }
